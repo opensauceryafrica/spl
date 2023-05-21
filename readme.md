@@ -1,3 +1,3 @@
-# legionnft
+# legionspl
 
-api endpoints required by legionbe to verify nft ownership as necessary for raiding
+api endpoints required by legionbe to verify spl token ownership as necessary for raiding
