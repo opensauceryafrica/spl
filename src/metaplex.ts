@@ -13,10 +13,13 @@ export const HoldsCollection = async (
   const nfts = await metaplex.nfts().findAllByOwner({
     owner: new PublicKey(address),
   });
-
-  const collectionNFTs = nfts.filter((nft) =>
-    nft.collection?.address.equals(new PublicKey(collection))
+  const collectionNFTs = nfts.filter(
+    (nft) =>
+      // if the nft collection address matches the collection address | if the nft creator address matches the collection address
+      nft.collection?.address.equals(new PublicKey(collection)) ||
+      nft?.creators?.some((creator) =>
+        creator.address.equals(new PublicKey(collection))
+      )
   );
-
   return collectionNFTs.length > 0;
 };
