@@ -3,7 +3,8 @@ import express, { Application } from 'express';
 import { config } from 'dotenv';
 config();
 import env from './env';
-import { HoldsCollection } from './metaplex';
+import * as metaplex from './metaplex';
+import * as solana from './solana';
 
 const app: Application = express();
 app.use(express.urlencoded({ extended: true }));
@@ -32,9 +33,9 @@ app.use(
 
 app.get('/:address/holding/:collection', async (req, res) => {
   try {
-    const holding = await HoldsCollection(
+    const holding = await metaplex.mintlistHoldsCollection(
       req.params.collection,
-      req.params.address
+      await solana.getTokenAccounts(req.params.address)
     );
     res.status(200).json({ holding });
   } catch (error) {

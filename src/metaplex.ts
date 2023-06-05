@@ -1,4 +1,4 @@
-import { Metaplex } from '@metaplex-foundation/js';
+import { Metaplex, isMetadata, isNft, isSft } from '@metaplex-foundation/js';
 import { Connection, PublicKey } from '@solana/web3.js';
 import env from './env';
 
@@ -6,7 +6,7 @@ const connection = new Connection(env.RPC);
 
 const metaplex = new Metaplex(connection);
 
-export const HoldsCollection = async (
+export const walletHoldsCollection = async (
   collection: string,
   address: string
 ): Promise<boolean> => {
@@ -22,4 +22,38 @@ export const HoldsCollection = async (
       )
   );
   return collectionNFTs.length > 0;
+};
+
+export const mintlistHoldsCollection = async (
+  collection: string,
+  mintlist: PublicKey[]
+): Promise<boolean> => {
+  console.log(`Total nfts in wallet: ${mintlist.length}`);
+  if (mintlist.length > 500) {
+    throw new Error(`Too many nfts in wallet (max. 100)`);
+  }
+  let counter = 0;
+  for (const mint of mintlist) {
+    // we are assuming early that a wallet holding a large collection should have a matching collection within the first 300 nfts
+    if (counter >= 300) {
+      return false;
+    }
+    const nft = await metaplex.nfts().findByMint({
+      mintAddress: mint,
+    });
+    console.log(nft.name, nft.address.toString());
+    if (
+      nft &&
+      (isNft(nft) || isMetadata(nft) || isSft(nft)) &&
+      (nft.collection?.address.equals(new PublicKey(collection)) ||
+        nft?.creators?.some((creator) =>
+          creator.address.equals(new PublicKey(collection))
+        ))
+    ) {
+      return true;
+    }
+    counter++;
+  }
+
+  return false;
 };
