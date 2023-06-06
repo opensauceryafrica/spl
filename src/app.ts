@@ -8,7 +8,7 @@ import * as solana from './solana';
 
 const app: Application = express();
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(express.raw());
 // app.use(
 //   cors({
