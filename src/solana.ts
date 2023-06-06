@@ -9,7 +9,7 @@ import env from './env';
 
 const solanaConnection = new Connection(env.RPC);
 
-export async function getTokenAccounts(wallet: string): Promise<PublicKey[]> {
+export async function getTokenAccounts(wallet: string): Promise<string[]> {
   const filters: GetProgramAccountsFilter[] = [
     {
       dataSize: 165, // size of account (bytes)
@@ -25,12 +25,10 @@ export async function getTokenAccounts(wallet: string): Promise<PublicKey[]> {
     TOKEN_PROGRAM_ID, //new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
     { filters: filters }
   );
-  const mints: PublicKey[] = [];
+  const mints: string[] = [];
   accounts.forEach((account, i) => {
     mints.push(
-      new PublicKey(
-        (account.account.data as ParsedAccountData)['parsed']['info']['mint']
-      )
+      (account.account.data as ParsedAccountData)['parsed']['info']['mint']
     );
   });
   return mints;

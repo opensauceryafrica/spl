@@ -26,7 +26,7 @@ export const walletHoldsCollection = async (
 
 export const mintlistHoldsCollection = async (
   collection: string,
-  mintlist: PublicKey[]
+  mintlist: string[]
 ): Promise<boolean> => {
   console.log(`Total nfts in wallet: ${mintlist.length}`);
   if (mintlist.length > 500) {
@@ -39,7 +39,7 @@ export const mintlistHoldsCollection = async (
       return false;
     }
     const nft = await metaplex.nfts().findByMint({
-      mintAddress: mint,
+      mintAddress: new PublicKey(mint),
     });
     console.log(nft.name, nft.address.toString());
     if (
@@ -55,5 +55,18 @@ export const mintlistHoldsCollection = async (
     counter++;
   }
 
+  return false;
+};
+
+export const mintlistHoldsAnyOfCollectionMints = async (
+  collectionMints: string[],
+  mintlist: string[]
+): Promise<boolean> => {
+  // for each mint in the collectionmints check if the mintlist contains it
+  for (const mint of collectionMints) {
+    if (mintlist.includes(mint)) {
+      return true;
+    }
+  }
   return false;
 };

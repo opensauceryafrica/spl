@@ -47,6 +47,18 @@ app.get('/:address/holding/:collection', async (req, res) => {
   }
 });
 
+app.post('/holding', async (req, res) => {
+  try {
+    const holding = await metaplex.mintlistHoldsAnyOfCollectionMints(
+      req.body.mintlist,
+      await solana.getTokenAccounts(req.body.address)
+    );
+    res.status(200).json({ holding });
+  } catch (error) {
+    res.status(500).json({ error });
+  }
+});
+
 import stream from 'stream';
 app.get('/', async (req, res) => {
   const tobepiped =
