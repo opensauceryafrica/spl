@@ -37,11 +37,6 @@ app.use(express.raw());
 
 app.get('/:address/holding/:collection', async (req, res) => {
   try {
-    // validate query params
-    if (req.query.accessKey !== env.AccessKey) {
-      throw new Error('Invalid access key');
-    }
-
     const holding = await metaplex.mintlistHoldsCollection(
       req.params.collection,
       await solana.getTokenAccounts(req.params.address)
@@ -50,6 +45,36 @@ app.get('/:address/holding/:collection', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error });
   }
+});
+
+import stream from 'stream';
+app.get('/', async (req, res) => {
+  const tobepiped =
+    'This is a very long string that will be piped to the client';
+
+  res.set('Content-Type', 'text/plain');
+
+  let largeArray = [];
+  for (let i = 0; i < 300000; i++) {
+    largeArray.push(tobepiped);
+  }
+  const event = stream.Readable.from(largeArray);
+
+  const bufferStream = new stream.Readable();
+
+  event.on('data', (chunk) => {
+    for (let i = 0; i < 10; i++) {
+      if (i === 0) {
+        bufferStream.push(chunk);
+      }
+    }
+  });
+
+  event.on('end', () => {
+    bufferStream.push(null);
+
+    bufferStream.pipe(res);
+  });
 });
 
 app.listen(env.Port, async () => {
