@@ -70,3 +70,13 @@ export const mintlistHoldsAnyOfCollectionMints = async (
   }
   return false;
 };
+
+// retrieves information about a mint including decimals, name, symbol, and total supply
+export const getMintMetadataViaMetaplex = async (
+  mint: string
+): Promise<any> => {
+  const metadata = await metaplex.tokens().findMintByAddress({
+    address: new PublicKey(mint),
+  });
+  return metadata;
+};
