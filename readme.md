@@ -1,3 +1,3 @@
-# legionspl
+# spl
 
-api endpoints required by legionbe to verify spl token ownership as necessary for raiding
+a radical collective of endpoints for executing functions present on the Solana Program Library
